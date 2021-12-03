@@ -4,7 +4,7 @@
 
 Chip8 is a fictional computer architecture created in the 70s by Jospeh Weisbecker to allow video games to be more easily programmed for a diverse range of computer hardware.
 Chip8 is realized in the form of a virtual machine on which ROMs either compiled, assembled or handwritten (byte by byte!) are run.
-There and a huge number of such ROMs available form various sources online (eg. https://github.com/kripod/chip8-roms) and give the presence of a VM on the target system they can be run on almost any computer.
+There and a huge number of such ROMs available form various sources online (for example: https://github.com/kripod/chip8-roms) and give the presence of a VM on the target system they can be run on almost any computer.
 
 This repository contains my own implementation of the Chip8 VM in C++ for the Linux OS although it can likely be coerced into compiling for any OS that uses X windows.
 The code was adapted from a earlier implementation I did in pure C so some evidence of this remains in the source code.
