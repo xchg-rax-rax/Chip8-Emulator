@@ -17,10 +17,12 @@ Enjoy!
 
 ## Compilation
 
-To compile the emulator for Linux use the following command:
+For now to compile the emulator for Linux use the following command:
 ```{bash}
 $ g++ ./src/Chip8.cpp ./src/Chip8Screen.cpp ./src/emulator.cpp -o ./bin/chip8 -lX11
 ```
+
+I'll add a make file and add cross platform support later down the line but for now this should work.
 
 ## Improvements
 
