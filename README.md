@@ -32,6 +32,8 @@ I'll add a make file and add cross platform support later down the line but for 
 
 There are a couple of things I feel could be improved and which I will no doubt come back and address at a later point, likely when I am more familiar with the X windows system.
 
+* Still need to add sound although this shouldn't be too hard.
+
 * I flush the output cache on every pixel draw, this is likely inefficient and leads to flickering as sprites are redrawn. I should refactor the screen class so that it's interface is draw\_sprite rather than draw\_pixel to prevent this.
 
 * Collision detection doesn't work, I am unsure why. This is hard to debug without a disassembler/debugger of the Chip8 emulator it self, I should add this to the project and then use it to find the cause of the problem. 
