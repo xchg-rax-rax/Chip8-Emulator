@@ -4,11 +4,13 @@
 
 Chip8 is a fictional computer architecture created in the 70s by Jospeh Weisbecker to allow video games to be more easily programmed for a diverse range of computer hardware.
 Chip8 is realized in the form of a virtual machine on which ROMs either compiled, assembled or handwritten (byte by byte!) are run.
-There and a huge number of such ROMs available form various sources online (for example: https://github.com/kripod/chip8-roms) and give the presence of a VM on the target system they can be run on almost any computer.
+There and a huge number of such ROMs available form various sources online ([for example](https://github.com/kripod/chip8-roms)) and give the presence of a VM on the target system they can be run on almost any computer.
 
 This repository contains my own implementation of the Chip8 VM in C++ for the Linux OS although it can likely be coerced into compiling for any OS that uses X windows.
 The code was adapted from a earlier implementation I did in pure C so some evidence of this remains in the source code.
 The reimplementation was mainly done as an exercise in refactoring as well as to better teach myself the X windows C library.
+
+I've also written an assembler a disassembler for the Chip8 instruction set which you can find [here](https://github.com/xchg-rax-rax/chip8dasm).
 
 Any comments, contributions or bug fixes would be greatly appreciated.
 
@@ -17,8 +19,10 @@ Enjoy!
 
 ## Compilation
 
-For now to compile the emulator for Linux use the following command:
+For now to download and  compile the emulator for Linux use the following commands:
 ```{bash}
+$ git clone https://github.com/xchg-rax-rax/Chip8-Emulator.git
+$ cd Chip8-Emulator
 $ g++ ./src/Chip8.cpp ./src/Chip8Screen.cpp ./src/emulator.cpp -o ./bin/chip8 -lX11
 ```
 
