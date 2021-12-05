@@ -31,112 +31,112 @@ void Chip8::execute_machine_language_subroutine_0NNN(unsigned short opcode) {
 }
 
 void Chip8::clear_screen_00E0(unsigned short opcode) {
-    memset(state.screen,0,sizeof(state.screen));
+    memset(screen_state,0,sizeof(screen_state));
     screen.clear_screen();
     // boy, was past me stupid or what? :')
     // keeping this as a comment in order to keep me humble
     /*
     int i,j;
-    for (i = 0; i < sizeof(state.screen)/sizeof(state.screen[0]); i++){ 
-        memset(state.screen[i],0,sizeof(state.screen[0]));
-        for (j = 0; j < sizeof(state.screen[0]); j++)
+    for (i = 0; i < sizeof(screen_state)/sizeof(screen_state[0]); i++){ 
+        memset(screen_state[i],0,sizeof(screen_state[0]));
+        for (j = 0; j < sizeof(screen_state[0]); j++)
             mvprintw(3+i,22+j," ");
     }
     */
 }
 
 void Chip8::return_00EE(unsigned short opcode) {
-    state.IP = state.stack[state.SP-1];
-    state.SP--;
+    IP = stack[SP-1];
+    SP--;
 }
 
 void Chip8::jump_to_1NNN(unsigned short opcode) {
     unsigned short NNN = opcode & 0xFFF;
-    state.IP = NNN - 2;
+    IP = NNN - 2;
 }
 
 void Chip8::execute_subroutine_2NNN(unsigned short opcode) {
     unsigned short NNN = opcode & 0xFFF;
-    state.stack[state.SP] = state.IP;
-    state.SP++;
-    state.IP = NNN - 2;
+    stack[SP] = IP;
+    SP++;
+    IP = NNN - 2;
 }
 
 void Chip8::skip_if_VX_equals_NN_3XNN(unsigned short opcode) {
     unsigned short X = (opcode & 0xF00) >> 8;
     unsigned char NN = opcode & 0xFF;
-    if (state.registers[X] == NN)
-        state.IP += 2;
+    if (registers[X] == NN)
+        IP += 2;
 }
 
 void Chip8::skip_if_not_VX_equal_NN_4XNN(unsigned short opcode) {
     unsigned short X = (opcode & 0xF00) >> 8;
     unsigned char NN = opcode & 0xFF;
-    if (state.registers[X] != NN)
-        state.IP += 2;
+    if (registers[X] != NN)
+        IP += 2;
 }
 
 void Chip8::skip_if_VX_equal_VY_5XY0(unsigned short opcode) {
     unsigned short X = (opcode & 0xF00) >> 8;
     unsigned short Y = (opcode & 0xF0) >> 4;
-    if (state.registers[X] == state.registers[Y])
-        state.IP += 2;
+    if (registers[X] == registers[Y])
+        IP += 2;
 }
 
 void Chip8::load_NN_into_VX_6XNN(unsigned short opcode) {
     unsigned short X = (opcode & 0xF00) >> 8;
     unsigned char NN = opcode & 0xFF;
-    state.registers[X] = NN;
+    registers[X] = NN;
 }
 
 void Chip8::add_NN_to_VX_7XNN(unsigned short opcode) {
     unsigned short X = (opcode & 0xF00) >> 8;
     unsigned char NN = opcode & 0xFF;
-    state.registers[X] += NN;
+    registers[X] += NN;
 }
 
 void Chip8::mov_VX_to_VY_8XY0(unsigned short opcode) {
     unsigned short X = (opcode & 0xF00) >> 8;
     unsigned short Y = (opcode & 0xF0) >> 4;
-    state.registers[X] = state.registers[Y];
+    registers[X] = registers[Y];
 }
 
 void Chip8::set_VX_to_VX_OR_VY_8XY1(unsigned short opcode) {
     unsigned short X = (opcode & 0xF00) >> 8;
     unsigned short Y = (opcode & 0xF0) >> 4;
-    state.registers[X] = state.registers[X] | state.registers[Y];
+    registers[X] = registers[X] | registers[Y];
 }
 
 void Chip8::set_VX_to_VX_AND_VY_8XY2(unsigned short opcode) {
     unsigned short X = (opcode & 0xF00) >> 8;
     unsigned short Y = (opcode & 0xF0) >> 4;
-    state.registers[X] = state.registers[X] & state.registers[Y];
+    registers[X] = registers[X] & registers[Y];
 }
 
 void Chip8::set_VX_to_VX_XOR_VY_8XY3(unsigned short opcode) {
     unsigned short X = (opcode & 0xF00) >> 8;
     unsigned short Y = (opcode & 0xF0) >> 4;
-    state.registers[X] = state.registers[X] ^ state.registers[Y];
+    registers[X] = registers[X] ^ registers[Y];
 }
 
 void Chip8::add_VY_to_VX_8XY4(unsigned short opcode) {
     unsigned short X = (opcode & 0xF00) >> 8;
     unsigned short Y = (opcode & 0xF0) >> 4;
-    if (state.registers[X] < USHRT_MAX - state.registers[Y])
-        state.registers[0xF] = 1;
+    if (registers[X] < USHRT_MAX - registers[Y])
+        registers[0xF] = 1;
     else
-        state.registers[0xF] = 0;
-    state.registers[X] += state.registers[Y];
+        registers[0xF] = 0;
+    registers[X] += registers[Y];
 }
 
 void Chip8::sub_VY_from_VX_8XY5(unsigned short opcode) {
     unsigned short X = (opcode & 0xF00) >> 8;
     unsigned short Y = (opcode & 0xF0) >> 4;
-    if (state.registers[X] > state.registers[Y])
-        state.registers[0xF] = 1;
+    if (registers[X] > registers[Y])
+        registers[0xF] = 1;
     else
-        state.registers[0xF] = 0;
-    state.registers[X] -= state.registers[Y];
+        registers[0xF] = 0;
+    registers[X] -= registers[Y];
 }
 
 void Chip8::right_shift_VY_store_in_VX_8XY6(unsigned short opcode) {
@@ -146,22 +146,22 @@ void Chip8::right_shift_VY_store_in_VX_8XY6(unsigned short opcode) {
     // get used by anyone!!
     unsigned short X = (opcode & 0xF00) >> 8;
     unsigned short Y = (opcode & 0xF0) >> 4;
-    if (state.registers[X] & 1 == 1)
-        state.registers[0xF] = 1;
+    if (registers[X] & 1 == 1)
+        registers[0xF] = 1;
     else
-        state.registers[0xF] = 0;
-    state.registers[X] = (state.registers[X] >> 1);
-    //state.registers[X] = (state.registers[Y] >> 1);
+        registers[0xF] = 0;
+    registers[X] = (registers[X] >> 1);
+    //registers[X] = (registers[Y] >> 1);
 }
 
 void Chip8::set_VX_to_VY_minus_VX_8XY7(unsigned short opcode) {
     unsigned short X = (opcode & 0xF00) >> 8;
     unsigned short Y = (opcode & 0xF0) >> 4;
-    if (state.registers[X] < state.registers[Y])
-        state.registers[0xF] = 1;
+    if (registers[X] < registers[Y])
+        registers[0xF] = 1;
     else
-        state.registers[0xF] = 0;
-    state.registers[X] = state.registers[Y] - state.registers[X];
+        registers[0xF] = 0;
+    registers[X] = registers[Y] - registers[X];
 }
 
 void Chip8::left_shift_VY_store_in_VX_8XYE(unsigned short opcode) {
@@ -171,36 +171,36 @@ void Chip8::left_shift_VY_store_in_VX_8XYE(unsigned short opcode) {
     // get used by anyone!!
     unsigned short X = (opcode & 0xF00) >> 8;
     unsigned short Y = (opcode & 0xF0) >> 4;
-    if (state.registers[X] & 1 == 1)
-        state.registers[0xF] = 1;
+    if (registers[X] & 1 == 1)
+        registers[0xF] = 1;
     else
-        state.registers[0xF] = 0;
-    state.registers[X] = (state.registers[X] << 1);
-    //state.registers[X] = (state.registers[Y] >> 1);
+        registers[0xF] = 0;
+    registers[X] = (registers[X] << 1);
+    //registers[X] = (registers[Y] >> 1);
 }
 
 void Chip8::skip_if_VX_not_equal_VY_9XY0(unsigned short opcode) {
     unsigned short X = (opcode & 0xF00) >> 8;
     unsigned short Y = (opcode & 0xF0) >> 4;
-    if (state.registers[X] != state.registers[Y])
-        state.IP += 2;
+    if (registers[X] != registers[Y])
+        IP += 2;
 }
 
 void Chip8::store_NNN_in_I_ANNN(unsigned short opcode) {
     unsigned short NNN = opcode & 0xFFF;
-    state.I = NNN;
+    I = NNN;
 }
 
 void Chip8::jump_to_NNN_plus_V0_BNNN(unsigned short opcode) {
    unsigned short NNN = opcode & 0xFFF;
     // may not be *2
-    state.IP = NNN + state.registers[0]*2;
+    IP = NNN + registers[0]*2;
 }
 
 void Chip8::set_VX_to_random_with_mask_NN_CXNN(unsigned short opcode) {
     unsigned short X = (opcode & 0xF00) >> 8;
     unsigned short NN = opcode & 0xFF;
-    state.registers[X] = (unsigned short) (NN & rand());
+    registers[X] = (unsigned short) (NN & rand());
 }
 
 void Chip8::draw_N_sprite_at_VX_VY_DXYN(unsigned short opcode) {
@@ -210,28 +210,28 @@ void Chip8::draw_N_sprite_at_VX_VY_DXYN(unsigned short opcode) {
     unsigned short X = (opcode & 0xF00) >> 8;
     unsigned short Y = (opcode & 0xF0) >> 4;
     unsigned short N = (opcode & 0xF);
-    state.registers[0xF] = 0;
+    registers[0xF] = 0;
     for (i = 0; i < N; i++){
         for (j = 0; j < 8; j++) {
             // update internal state
-            val = state.screen[(state.registers[Y] + i) % 32][(state.registers[X] - 1 + j) % 64];
-            state.screen[(state.registers[Y] + i) % 32][(state.registers[X] + j) % 64] ^= (unsigned char) (state.memory[state.I+i]&(1 << (7-j))) >> (7-j);
+            val = screen_state[(registers[Y] + i) % 32][(registers[X] - 1 + j) % 64];
+            screen_state[(registers[Y] + i) % 32][(registers[X] + j) % 64] ^= (unsigned char) (memory[I+i]&(1 << (7-j))) >> (7-j);
 
             //set flag if previous set pixel unset
-            if (state.screen[(state.registers[Y]+i)%32][(state.registers[X]-1+j)%64] == 0 && val == 1)
-                state.registers[0xF] = 1;
+            if (screen_state[(registers[Y]+i)%32][(registers[X]-1+j)%64] == 0 && val == 1)
+                registers[0xF] = 1;
 
             // for the moment I'll use the naive aproach and just redraw the screen on every iteration
             // this is awfully in efficient but for now I simply aim to get it working before optimizing
             // it's easier to speed up a moving car than one that won't even start
             //redraw_screen();
-            if (state.screen[(state.registers[Y]+i)%32][(state.registers[X]-1+j)%64]) {
-                screen.draw_pixel((state.registers[X]-1+j)%64, (state.registers[Y]+i)%32, 1);
+            if (screen_state[(registers[Y]+i)%32][(registers[X]-1+j)%64]) {
+                screen.draw_pixel((registers[X]-1+j)%64, (registers[Y]+i)%32, 1);
             }
             else { 
-                screen.draw_pixel((state.registers[X]-1+j)%64, (state.registers[Y]+i)%32, 0);
+                screen.draw_pixel((registers[X]-1+j)%64, (registers[Y]+i)%32, 0);
             }
-     //       mvprintw(40,10,"i:%02x j:%02x x;%02x y:%02x %02x %02x %02x ",i,j,(state.registers[Y]+i)%32,(state.registers[X]-1+j)%64,val,state.screen[(state.registers[Y]+i)%32][(state.registers[X]-1+j)%64], (unsigned char) (state.memory[state.I+i]&(1 << (7-j))) >> (7-j));
+     //       mvprintw(40,10,"i:%02x j:%02x x;%02x y:%02x %02x %02x %02x ",i,j,(registers[Y]+i)%32,(registers[X]-1+j)%64,val,screen_state[(registers[Y]+i)%32][(registers[X]-1+j)%64], (unsigned char) (memory[I+i]&(1 << (7-j))) >> (7-j));
       //      getch();
         }
     }
@@ -244,8 +244,8 @@ void Chip8::skip_if_VX_key_pressed_EX9E(unsigned short opcode) {
     unsigned char key = screen.check_for_input();
     if (key != 0xFF){
         printf("Key Pressed : %x\n", key);
-        if (state.registers[X] == key) 
-            state.IP += 2;
+        if (registers[X] == key) 
+            IP += 2;
     }
 }
 
@@ -254,13 +254,13 @@ void Chip8::skip_if_VX_not_pressed_EXA1(unsigned short opcode) {
     unsigned short Y = (opcode & 0xF0) >> 4;
     // check for key
     unsigned char key = screen.check_for_input();
-    if (state.registers[X] != key) 
-        state.IP += 2;
+    if (registers[X] != key) 
+        IP += 2;
 }
 
 void Chip8::store_delay_timer_in_VX_FX07(unsigned short opcode) {
     unsigned short X = (opcode & 0xF00) >> 8;
-    state.registers[X] = state.timers[0];
+    registers[X] = timers[0];
 }
 
 void Chip8::store_keypress_in_VX_FX0A(unsigned short opcode) {
@@ -270,38 +270,38 @@ void Chip8::store_keypress_in_VX_FX0A(unsigned short opcode) {
         key = screen.check_for_input();
     }
     printf("Key Pressed : %x\n", key);
-    state.registers[X] = key;
+    registers[X] = key;
 }
 
 void Chip8::set_delay_timer_to_VX_FX15(unsigned short opcode) {
     unsigned short X = (opcode & 0xF00) >> 8;
-    state.timers[0] = state.registers[X];
+    timers[0] = registers[X];
 }
 
 void Chip8::set_sound_timer_to_VX_FX18(unsigned short opcode) {
     unsigned short X = (opcode & 0xF00) >> 8;
-    state.timers[1] = state.registers[X];
+    timers[1] = registers[X];
 }
 
 void Chip8::add_VX_to_I_FX1E(unsigned short opcode) {
     unsigned short X = (opcode & 0xF00) >> 8;
-    state.I += state.registers[X];
+    I += registers[X];
 }
 
 void Chip8::set_I_to_addr_of_VX_sprite_FX29(unsigned short opcode) {
     unsigned short X = (opcode & 0xF00) >> 8;
-    state.I = 0x50 + 5*state.registers[X];
+    I = 0x50 + 5*registers[X];
 }
 
 void Chip8::store_VX_as_BCD_at_I_FX33(unsigned short opcode) {
     unsigned short val;
     unsigned short X = (opcode & 0xF00) >> 8;
-    val = state.registers[X];
-    state.memory[state.I] = (char) (val / 100);
-    val -= state.memory[state.I]*100;
-    state.memory[state.I+1] = (char) (val / 10);
-    val -= state.memory[state.I+1]*10;
-    state.memory[state.I+2] = (char) (val);
+    val = registers[X];
+    memory[I] = (char) (val / 100);
+    val -= memory[I]*100;
+    memory[I+1] = (char) (val / 10);
+    val -= memory[I+1]*10;
+    memory[I+2] = (char) (val);
 }
 
 void Chip8::store_V0_to_VX_in_I_FX55(unsigned short opcode) {
@@ -309,8 +309,8 @@ void Chip8::store_V0_to_VX_in_I_FX55(unsigned short opcode) {
     int i;
     unsigned short X = (opcode & 0xF00) >> 8;
     for (i = 0; i<X+1; i++)
-        state.memory[state.I + i] = state.registers[i];
-    state.I += X + 1;
+        memory[I + i] = registers[i];
+    I += X + 1;
 
 }
 
@@ -319,23 +319,23 @@ void Chip8::set_V0_to_VX_to_I_FX65(unsigned short opcode) {
     int i;
     unsigned short X = (opcode & 0xF00) >> 8;
     for (i = 0; i<X+1; i++)
-        state.registers[i] = state.memory[state.I + i]; 
-    state.I += X + 1;
+        registers[i] = memory[I + i]; 
+    I += X + 1;
 }
 
 // Initialization Functions
 
 Chip8::Chip8() {
     // set up the initial state  
-    state.IP = 0x200;
-    memset(state.memory,0,sizeof(state.memory));
-    memset(state.registers,0,sizeof(state.registers));
-    memset(&(state.I),0,sizeof(state.I));
-    memset(state.stack,0,sizeof(state.stack));
-    state.SP = 0;
-    memset(state.timers,0,sizeof(state.timers));
-    gettimeofday(&(state.last_timer_update),NULL);
-    memset(state.screen,0,sizeof(state.screen));
+    IP = 0x200;
+    memset(memory,0,sizeof(memory));
+    memset(registers,0,sizeof(registers));
+    memset(&(I),0,sizeof(I));
+    memset(stack,0,sizeof(stack));
+    SP = 0;
+    memset(timers,0,sizeof(timers));
+    gettimeofday(&(last_timer_update),NULL);
+    memset(screen_state,0,sizeof(screen_state));
     load_font_into_memory();
 }
 
@@ -366,7 +366,7 @@ void Chip8::load_process_image(char* rom_path) {
         fclose(rom_fd);
         exit(1);
     }
-    bytes_read = fread(state.memory+0x200,rom_size,1,rom_fd)*rom_size;
+    bytes_read = fread(memory+0x200,rom_size,1,rom_fd)*rom_size;
     if (bytes_read != rom_size) {
         printf("Error: Failed to read complete ROM into memory. Read %d, expected %d\n", bytes_read);
         fclose(rom_fd);
@@ -380,7 +380,7 @@ void Chip8::load_font_into_memory() {
     k = 80;
     for (i = 0; i < sizeof(font)/sizeof(font[0]); i++){
         for (j = 0; j < sizeof(font[0]); j++){
-            state.memory[k] = font[i][j];
+            memory[k] = font[i][j];
             k++;
         }
     }
@@ -393,14 +393,14 @@ void Chip8::increment_timers() {
     unsigned short update;
     struct timeval now;
     gettimeofday(&now,NULL);
-    update = (unsigned short) (now.tv_usec - (state.last_timer_update).tv_usec);
+    update = (unsigned short) (now.tv_usec - (last_timer_update).tv_usec);
     if (update > 16666) {
         for (i = 0; i<2; i++) {
-            if (state.timers[i] > 0){
-                state.timers[i] -= 1;
+            if (timers[i] > 0){
+                timers[i] -= 1;
             }
         }
-        state.last_timer_update = now;
+        last_timer_update = now;
     }
 }
 
@@ -408,7 +408,7 @@ void Chip8::redraw_screen() {
     int i, j;
     for (i = 0; i < 64; i++){
         for (j = 0; j < 32; j++) {
-            screen.draw_pixel(i, j, state.screen[j][i]);
+            screen.draw_pixel(i, j, screen_state[j][i]);
         }
     }
 }
@@ -417,8 +417,8 @@ void Chip8::redraw_screen() {
 void Chip8::execute_cycle() {
     unsigned short opcode;
     unsigned short lsn; // least significant nibble
-    opcode = state.memory[state.IP] << 8;
-    opcode += state.memory[state.IP+1];
+    opcode = memory[IP] << 8;
+    opcode += memory[IP+1];
     usleep(1000);
     // looking up instruction via case statement
     switch((opcode&0xF000) >> 12) {
@@ -550,14 +550,14 @@ void Chip8::execute_cycle() {
     // executing instruction simple function call 
     increment_timers();
     //update_display(opcode);
-    state.IP += 2;
+    IP += 2;
  }
 
 void Chip8::dump_memory() {
     for (int i=0; i < 4096; i++){
         if (i % 32 == 0)
             printf("%04x : ",i);
-        printf("%02X ",state.memory[i]);
+        printf("%02X ",memory[i]);
         if (i % 32 == 31)
             printf("\n");
     }

@@ -9,24 +9,21 @@
 
 #include "Chip8Screen.h"
 
-// This struct is stupid, just make them class fields for the love of all that is holy
-typedef struct {
-    unsigned short IP; // The instruction pointer points to the instruction to be executed  
-    unsigned char memory[4096]; // Chip8 systems have 4kB of addressable, the first 512 bytes are reserved
-    unsigned char registers[16]; // Chip8 has 16 8 bit registers named V0 to VF, VF doubles as a flag
-    unsigned short I; // The addresses register, used for memory rw
-    unsigned short stack[24]; // The call stack only stores return addresses
-    unsigned short SP; // The stack pointer, must be between 0 and 23, inicates the location of the last object placed onto the stack
-    unsigned char timers[2]; // The sound and delay timers, count down and 60Hz when non zero
-    struct timeval last_timer_update;
-    unsigned char screen[32][64]; // y,x 1F by 3F screen
-} chip8;
-
 class Chip8 {
     private:
-        // state
-        chip8 state;
+        // CPU state 
+        unsigned short IP; // The instruction pointer points to the instruction to be executed  
+        unsigned char memory[4096]; // Chip8 systems have 4kB of addressable, the first 512 bytes are reserved
+        unsigned char registers[16]; // Chip8 has 16 8 bit registers named V0 to VF, VF doubles as a flag
+        unsigned short I; // The addresses register, used for memory rw
+        unsigned short stack[24]; // The call stack only stores return addresses
+        unsigned short SP; // The stack pointer, must be between 0 and 23, inicates the location of the last object placed onto the stack
+        unsigned char timers[2]; // The sound and delay timers, count down and 60Hz when non zero
+        struct timeval last_timer_update;
+       
+        // Graphics
         Chip8Screen screen;
+        unsigned char screen_state[32][64]; // y,x 1F by 3F screen
 
         // chip8 instruction set
         void execute_machine_language_subroutine_0NNN(unsigned short opcode);
